@@ -1,38 +1,39 @@
+import { QuizContext } from '../contexts/quiz';
 import Question from './Question'
-import {useReducer} from "react";
+import {useContext} from "react";
 
-const initialState ={
-    currentQuestionIndex : 0,
-    questions : []
-} 
-
-const reducer = (state, action) =>{
-    if(action.type === "NEXT_QUESTION"){
-        return {...state,currentQuestionIndex : state.currentQuestionIndex + 1}
-    }
-    return state;
-}
 
 const Quiz = () => {
 
-    const [state, dispacth] = useReducer(reducer,initialState);
-
-    console.log("render", state);
+    const [quizState, dispacth] = useContext(QuizContext);
 
     const textClick =() =>{
-        console.log("testClick");
         dispacth({type: "NEXT_QUESTION"})
     }
 
     return (
         <div className='quiz'>
-            <div>
-                <div className='score'> Question {state.currentQuestionIndex}/8</div>
-                <Question questions = { state.questions}/>
-                <div className='next-button' onClick={textClick}>
-                    Next Question 
+            { quizState.showResults && quizState.questions.length > 0 (
+                <div classname ='results'>
+                    <div className='congratulations'>Congratulations</div>
+                    <div className='results-info'>
+                        <div>You have completed the quiz.</div>
+                        <div>You've got {quizState.correctAnswersCount} of {quizState.questions.length}</div>
+                    </div>
+                    <div className='next-button' onClick={() => dispacth({type: "RESTART"})} >start</div>
                 </div>
-            </div>
+            )}
+            { !quizState.showResults &&(
+                <div>
+                    <div className='score'> 
+                        Question {quizState.currentQuestionIndex + 1}/{quizState.questions.length}
+                    </div>
+                    <Question questions = { quizState.questions}/>
+                    <div className='next-button' onClick={textClick}>
+                        Next Question 
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
